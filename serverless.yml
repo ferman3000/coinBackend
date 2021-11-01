@@ -1,4 +1,3 @@
-
 # Welcome to Serverless!
 #
 # This file is the main config file for your service.
@@ -31,7 +30,18 @@ provider:
 #  region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
+  iamRoleStatements:
+   - Effect: "Allow"
+      Action:
+        - dynamodb: DescribeTable
+        - dynamodb: Query
+        - dynamodb: Scan
+        - dynamodb: GetItem
+        - dynamodb: PutItem
+        - dynamodb: UpdateItem
+        - dynamodb: DeleteItem
+        - dynamodb: CreateTable
+      Resource: '*'
 #    - Effect: "Allow"
 #      Action:
 #        - "s3:ListBucket"
@@ -59,8 +69,45 @@ provider:
 #    - include-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  writeToDB:
+    handler: functions/coins/createCoin.main
+    events:
+      - http:
+          path: addCoin
+          method: post
+          cors: true
+
+  getAllCoins:
+    handler: functions/coins/getAllCoins.main
+    events:
+      - http:
+          path: getAll
+          method: get
+          cors: true   
+
+  getCoinById:
+    handler: functions/coins/getCoinById.main
+    events:
+      - http:
+          path: getOne
+          method: get
+          cors: true  
+
+  updateCoin:
+    handler: functions/coins/updateCoin.main
+    events:
+      - http:
+          path: update
+          method: put
+          cors: true        
+
+  deleteCoin:
+    handler: functions/coins/deleteCoin.main
+    events:
+      - http:
+          path: delete
+          method: delete
+          cors: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
